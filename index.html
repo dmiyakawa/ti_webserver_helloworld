@@ -6,22 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>講義表 with bootstrap</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-
   </head>
   <body>
     <div class="container">
       <div style="text-align: center; padding-top: 40px;">
         <h1>講義表ページ</h1>
         <h2>総講義数: {{ course_count }}</h2>
-        {% for course_model in course_model_list %}
-        course_model.date
-        {% endfor %}
+        {% if course_model_list %}
+        <table class="table" align="center"
+               style="width: 300px;">
+          <thead>
+            <tr><td>日付</td><td>講師</td><td>詳細</td></tr>
+          </thead>
+          <tbody>
+            {% for course_model in course_model_list %}
+            <tr>
+              <td>{{ course_model.date.strftime('%Y-%m-%d') }}</td>
+              <td>{{ course_model.title }}</td>
+              <td>{{ course_model.teacher }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
         <div>
-          <a href="/create">Create</a>
+          <a href="/create" class="btn btn-default">Create</a>
         </div>
       </div>
     </div>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
   </body>

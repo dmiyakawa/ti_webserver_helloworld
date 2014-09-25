@@ -7,6 +7,7 @@ import webapp2
 
 from datetime import datetime, timedelta
 from json import dumps
+from xml.sax.saxutils import escape
 
 import logging
 import os
@@ -16,8 +17,10 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+
 def course_list_key():
     return ndb.Key('CourseList', 'default_course_list')
+
 
 class Course(ndb.Model):
     date = ndb.DateTimeProperty()
@@ -25,30 +28,32 @@ class Course(ndb.Model):
     teacher = ndb.StringProperty()
     detail = ndb.StringProperty()
 
+
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        course_model_list = Course.query(ancestor=course_list_key()).order(-Course.date)
+        course_model_list = Course.query(ancestor=course_list_key()).order(Course.date)
         output = self.request.get('output', 'html')
         if output == 'html':
-            course_count = course_model_list.count()
-            template_values = {'course_count': course_count}
-            template = JINJA_ENVIRONMENT.get_template('index.html')
-            self.response.write(template.render(template_values))
+#             course_count = course_model_list.count()
+#             template_values = {'course_count': course_count,
+#                                'course_model_list': course_model_list}
+#             template = JINJA_ENVIRONMENT.get_template('index.html')
+#             self.response.write(template.render(template_values))
 
-#             lst = [u'<html><body>']
-#             lst.append(u'<h1>講義数合計: {}</h1>'
-#                        .format(course_model_list.count()))
-#             lst.append(u'<ul>')
-#             for course_model in course_model_list:
-#                 lst.append(u'<li>{}, {}, {}</li>'
-#                            .format(course_model.title,
-#                                    course_model.teacher,
-#                                    course_model.detail))
-#             lst.append(u'</ul>')
-#             lst.append(u'<a href="/create">Create</a>')
-#             lst.append(u'</body></html>')
-#             self.response.headers['Content-Type'] = 'text/html; charset=UTF-8'
-#             for line in lst: self.response.write(line)
+            lst = [u'<html><body>']
+            lst.append(u'<h1>講義数合計: {}</h1>'
+                       .format(course_model_list.count()))
+            lst.append(u'<ul>')
+            for course_model in course_model_list:
+                lst.append(u'<li>{}, {}, {}</li>'
+                           .format(escape(course_model.title),
+                                   escape(course_model.teacher),
+                                   escape(course_model.detail)))
+            lst.append(u'</ul>')
+            lst.append(u'<a href="/create">Create</a>')
+            lst.append(u'</body></html>')
+            self.response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+            for line in lst: self.response.write(line)
         else:
             courses = []  # 空のリスト
             for course_model in course_model_list:
@@ -100,5 +105,5 @@ class CreateCourse(webapp2.RequestHandler):
         
 application = webapp2.WSGIApplication([
     ("/create", CreateCourse),
-    ("/.*", MainPage),
+    ("/", MainPage),
 ], debug=True)

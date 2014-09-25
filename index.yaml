@@ -4,5 +4,5 @@ indexes:
   properties:
   - name: date
     direction: desc
-
-    
+  - name: date
+    direction: asc
