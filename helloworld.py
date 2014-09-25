@@ -13,7 +13,7 @@ class Course(ndb.Model):
     teacher = ndb.StringProperty()
     detail = ndb.StringProperty()
 
-class MainPage(webapp2.RequestHandler):
+class MainHandler(webapp2.RequestHandler):
     def get(self):
         course_model_list = Course.query(ancestor=course_list_key()).order(Course.date)
         courses = []  # 空のリスト
@@ -26,6 +26,6 @@ class MainPage(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json; charset=UTF-8'
         self.response.write(dumps({'course': courses}, ensure_ascii=False))
 
-application = webapp2.WSGIApplication([
-    ("/", MainPage),
+app = webapp2.WSGIApplication([
+    ("/", MainHandler),
 ], debug=True)
